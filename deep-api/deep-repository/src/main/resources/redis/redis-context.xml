@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:redis="http://www.springframework.org/schema/redis"
+       xsi:schemaLocation="
+  		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/redis http://www.springframework.org/schema/redis/spring-redis.xsd
+        ">
+
+
+    <!-- jedis pool配置 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxActive" value="#{T(com.deep.common.Environment).get('redis.maxActive')}"/>
+        <property name="maxIdle" value="#{T(com.deep.common.Environment).get('redis.maxIdle')}"/>
+        <property name="maxWait" value="#{T(com.deep.common.Environment).get('redis.maxWait')}"/>
+        <property name="testOnBorrow" value="#{T(com.deep.common.Environment).get('redis.testOnBorrow')}"/>
+    </bean>
+
+    <!-- spring data redis -->
+    <!-- spring data redis -->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="usePool" value="true"/>
+        <property name="hostName" value="#{T(com.deep.common.Environment).get('redis.host')}"/>
+        <property name="port" value="#{T(com.deep.common.Environment).get('redis.port')}"/>
+        <property name="password" value="#{T(com.deep.common.Environment).get('redis.pass')}"/>
+        <property name="timeout" value="#{T(com.deep.common.Environment).get('redis.timeout')}"/>
+        <property name="database" value="#{T(com.deep.common.Environment).get('redis.default.db')}"/>
+        <constructor-arg index="0" ref="jedisPoolConfig"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+        <property name="valueSerializer" ref="stringRedisSerializer"/>
+        <property name="hashValueSerializer" ref="stringRedisSerializer"/>
+    </bean>
+
+    <!--bean id="queueTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+        <property name="valueSerializer" ref="stringRedisSerializer"/>
+    </bean-->
+
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    <bean id="redisSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+    <!--bean id="fastJsonRedisSerializer" class="com.southzw.redis.serializer.FastJsonRedisSerializer">
+        <constructor-arg type="java.lang.Class" value="com.deep.service.async.UserAction"/>
+    </bean-->
+
+</beans>
