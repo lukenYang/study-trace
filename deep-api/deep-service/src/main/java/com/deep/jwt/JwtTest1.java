@@ -56,8 +56,8 @@ public class JwtTest1 {
 
             //Verify a Token
             JWTVerifier verifier = JWT.require(algorithm).withIssuer("issuer").build();
-            DecodedJWT decodedJWT = verifier.verify(token.replaceFirst("3", "2"));
-//            DecodedJWT decodedJWT = verifier.verify(token);
+//            DecodedJWT decodedJWT = verifier.verify(token.replaceFirst("3", "2"));
+            DecodedJWT decodedJWT = verifier.verify(token);
             String header = decodedJWT.getHeader();
             System.out.println(header);
             System.out.println(new String(Base64.getDecoder().decode(header)));
