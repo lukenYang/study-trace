@@ -24,6 +24,7 @@ public class JwtTest1 {
         test1.rsa();
     }
 
+    //Using static secrets or keys, HMAC256
     private void hmac() {
         try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
@@ -44,7 +45,8 @@ public class JwtTest1 {
         }
     }
 
-    public void rsa() {
+    //Using static secrets or keys, RSA256
+    private void rsa() {
         KeyPair keyPair = getKeyPair();
         PublicKey publicKey = keyPair.getPublic();
         System.out.println("publicKey：" + new String(Base64.getEncoder().encode(publicKey.getEncoded())));
@@ -77,22 +79,22 @@ public class JwtTest1 {
 
     }
 
-    public void rsaProvider() {
+    //Using a KeyProvider:RSA256
+    private void rsaProvider() {
         Algorithm algorithm = Algorithm.RSA256(getKeyProvider());
         String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
         System.out.println(token);
 
         //Verify a Token
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("issuer").build();
-//            DecodedJWT decodedJWT = verifier.verify(token.replaceFirst("3", "2"));
         DecodedJWT decodedJWT = verifier.verify(token);
     }
 
-    public RSAKeyProvider getKeyProvider() {
+    private RSAKeyProvider getKeyProvider() {
         return new DiscoveryRSAKeyProvider();
     }
 
-    public KeyPair getKeyPair() {
+    private KeyPair getKeyPair() {
         RSAKeyPairGenerator generator = new RSAKeyPairGenerator();
         return generator.generateKeyPair();
     }
