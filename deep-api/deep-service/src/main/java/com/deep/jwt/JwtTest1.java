@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 import sun.security.rsa.RSAKeyPairGenerator;
 
 import java.io.UnsupportedEncodingException;
@@ -74,6 +75,21 @@ public class JwtTest1 {
             e.printStackTrace();
         }
 
+    }
+
+    public void rsaProvider() {
+        Algorithm algorithm = Algorithm.RSA256(getKeyProvider());
+        String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
+        System.out.println(token);
+
+        //Verify a Token
+        JWTVerifier verifier = JWT.require(algorithm).withIssuer("issuer").build();
+//            DecodedJWT decodedJWT = verifier.verify(token.replaceFirst("3", "2"));
+        DecodedJWT decodedJWT = verifier.verify(token);
+    }
+
+    public RSAKeyProvider getKeyProvider() {
+        return new DiscoveryRSAKeyProvider();
     }
 
     public KeyPair getKeyPair() {
