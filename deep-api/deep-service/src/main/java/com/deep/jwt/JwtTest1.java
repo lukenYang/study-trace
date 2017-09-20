@@ -16,6 +16,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 
+/**
+ * https://github.com/auth0/java-jwt
+ */
 public class JwtTest1 {
 
     public static void main(String[] args) {
