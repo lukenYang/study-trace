@@ -1,12 +1,13 @@
 package com.deep.jwt;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.RSAPublicKeySpec;
 
@@ -38,6 +39,29 @@ public class JKSUtil {
         return getKeyPair(alias, this.password);
     }
 
+    //read file to get publicKey
+    private static PublicKey getPublicKeyFromCrt() {
+        String crtPath = "C:/ylh/test1.crt"; // KeyTool中已生成的证书文件
+        FileInputStream in = null;
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            in = new FileInputStream(crtPath);
+            Certificate crt = cf.generateCertificate(in);
+            return crt.getPublicKey();
+        } catch (CertificateException | FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
     public KeyPair getKeyPair(String alias, char[] password) {
         try {
             synchronized (this.lock) {
@@ -51,6 +75,7 @@ public class JKSUtil {
             RSAPrivateCrtKey key = (RSAPrivateCrtKey) this.store.getKey(alias, password);
             RSAPublicKeySpec spec = new RSAPublicKeySpec(key.getModulus(), key.getPublicExponent());
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
+//            PublicKey publicKey = getPublicKeyFromCrt();//read file to get publicKey
             return new KeyPair(publicKey, key);
         } catch (Exception e) {
             e.printStackTrace();
