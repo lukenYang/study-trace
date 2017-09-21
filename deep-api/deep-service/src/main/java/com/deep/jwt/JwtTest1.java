@@ -32,7 +32,7 @@ public class JwtTest1 {
     private void hmac() {
         try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
-            String token = JWT.create().withIssuer("issuer").withClaim("k1", "v1").sign(algorithm);
+            String token = JWT.create().withKeyId("publicId").withIssuer("issuer").withClaim("k1", "v1").sign(algorithm);
             System.out.println(token);
 
             JWTVerifier verifier = JWT.require(algorithm).withIssuer("issuer").build();
@@ -58,7 +58,7 @@ public class JwtTest1 {
         System.out.println("privateKey：" + new String(Base64.getEncoder().encode(privateKey.getEncoded())));
         try {
             Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) publicKey, (RSAPrivateKey) privateKey);
-            String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
+            String token = JWT.create().withKeyId("publicId").withIssuer("issuer").withClaim("name", "value").sign(algorithm);
             System.out.println(token);
 
             //Verify a Token
@@ -86,7 +86,7 @@ public class JwtTest1 {
     //Using a KeyProvider:RSA256
     private void rsaProvider() {
         Algorithm algorithm = Algorithm.RSA256(getKeyProvider());
-        String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
+        String token = JWT.create().withKeyId("publicId").withIssuer("issuer").withClaim("name", "value").sign(algorithm);
         System.out.println(token);
 
         //Verify a Token
@@ -103,7 +103,7 @@ public class JwtTest1 {
         System.out.println("privateKey：" + new String(Base64.getEncoder().encode(privateKey.getEncoded())));
         try {
             Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) publicKey, (RSAPrivateKey) privateKey);
-            String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
+            String token = JWT.create().withKeyId("publicId").withIssuer("issuer").withClaim("name", "value").sign(algorithm);
             System.out.println(token);
 
         } catch (IllegalArgumentException | JWTCreationException e) {
