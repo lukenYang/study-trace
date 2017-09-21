@@ -41,7 +41,8 @@ public class JKSUtil {
 
     //read file to get publicKey
     private static PublicKey getPublicKeyFromCrt() {
-        String crtPath = "C:/ylh/test1.crt"; // KeyTool中已生成的证书文件
+        //test2.cer  test1.crt  support both
+        String crtPath = "C:/ylh/test1.crt"; // KeyTool generate
         FileInputStream in = null;
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -74,7 +75,7 @@ public class JKSUtil {
             }
             RSAPrivateCrtKey key = (RSAPrivateCrtKey) this.store.getKey(alias, password);
             RSAPublicKeySpec spec = new RSAPublicKeySpec(key.getModulus(), key.getPublicExponent());
-            PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
+            PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);//get publicKey from privateKey,better
 //            PublicKey publicKey = getPublicKeyFromCrt();//read file to get publicKey
             return new KeyPair(publicKey, key);
         } catch (Exception e) {
