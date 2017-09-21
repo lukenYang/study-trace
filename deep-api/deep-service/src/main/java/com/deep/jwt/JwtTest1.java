@@ -21,7 +21,8 @@ public class JwtTest1 {
     public static void main(String[] args) {
         JwtTest1 test1 = new JwtTest1();
 //        test1.hmac();
-        test1.rsa();
+//        test1.rsa();
+        test1.testKeyTool();
     }
 
     //Using static secrets or keys, HMAC256
@@ -88,6 +89,23 @@ public class JwtTest1 {
         //Verify a Token
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("issuer").build();
         DecodedJWT decodedJWT = verifier.verify(token);
+    }
+
+    //Using a java keytool
+    private void testKeyTool() {
+        KeyPair keyPair = JKSUtil.getInstance().getKeyPair("test1");
+        PublicKey publicKey = keyPair.getPublic();
+        System.out.println("publicKey：" + new String(Base64.getEncoder().encode(publicKey.getEncoded())));
+        PrivateKey privateKey = keyPair.getPrivate();
+        System.out.println("privateKey：" + new String(Base64.getEncoder().encode(privateKey.getEncoded())));
+        try {
+            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) publicKey, (RSAPrivateKey) privateKey);
+            String token = JWT.create().withIssuer("issuer").withClaim("name", "value").sign(algorithm);
+            System.out.println(token);
+
+        } catch (IllegalArgumentException | JWTCreationException e) {
+            e.printStackTrace();
+        }
     }
 
     private RSAKeyProvider getKeyProvider() {
