@@ -6,14 +6,18 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.apache.commons.lang.StringUtils;
 import sun.security.rsa.RSAKeyPairGenerator;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 /**
@@ -118,5 +122,59 @@ public class JwtTest1 {
     private KeyPair getKeyPair() {
         RSAKeyPairGenerator generator = new RSAKeyPairGenerator();
         return generator.generateKeyPair();
+    }
+
+    //http://www.360doc.com/content/16/0919/13/9200790_591987035.shtml
+    public static PrivateKey getPrivateKeyFromString(String algorithm, String privateKey) {
+        PrivateKey privateKeyFromX509 = null;
+        try {
+            privateKeyFromX509 = getPrivateKeyFromX509(algorithm, new ByteArrayInputStream(privateKey.getBytes()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return privateKeyFromX509;
+    }
+
+    public static PrivateKey getPrivateKeyFromX509(String algorithm, InputStream ins) throws Exception {
+        if (ins != null && !StringUtils.isEmpty(algorithm)) {
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+            byte[] encodedKey = readText(ins);
+            encodedKey = Base64.getDecoder().decode(encodedKey);
+            return keyFactory.generatePrivate(new X509EncodedKeySpec(encodedKey));
+        } else {
+            return null;
+        }
+    }
+
+    public static PrivateKey getPrivateKeyFromPKCS8(String algorithm, InputStream ins) throws Exception {
+        if (ins != null && !StringUtils.isEmpty(algorithm)) {
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+            byte[] encodedKey = readText(ins);
+            encodedKey = Base64.getDecoder().decode(encodedKey);
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey));
+        } else {
+            return null;
+        }
+    }
+
+    public static byte[] readText(InputStream ins) throws IOException {
+        Reader reader = new InputStreamReader(ins);
+        StringWriter writer = new StringWriter();
+        io(reader, writer, -1);
+        return writer.toString().getBytes();
+    }
+
+    public static void io(Reader in, Writer out, int bufferSize) throws IOException {
+        if (bufferSize == -1) {
+            bufferSize = 4096;
+        }
+
+        char[] buffer = new char[bufferSize];
+
+        int amount;
+        while ((amount = in.read(buffer)) >= 0) {
+            out.write(buffer, 0, amount);
+        }
+
     }
 }
