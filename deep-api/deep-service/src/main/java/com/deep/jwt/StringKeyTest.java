@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -39,6 +41,7 @@ public class StringKeyTest {
             System.out.println(payload);
             System.out.println(new String(Base64.getDecoder().decode(payload)));
             System.out.println(decodedJWT.getSignature());
+            exportPrivateKey(PRIVATE_KEY);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,6 +65,20 @@ public class StringKeyTest {
             return keyFactory.generatePublic(new X509EncodedKeySpec(decodeKey));
         } else {
             return null;
+        }
+    }
+
+    public static void exportPrivateKey(String privateKey) {
+        String file = "C:\\ylh\\privateKey.pem";
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write("-- privateKey begin --\n");
+            writer.write(privateKey);
+            writer.write("\n");
+            writer.write("-- privateKey end --");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
