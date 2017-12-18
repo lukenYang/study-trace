@@ -10,6 +10,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 
 public class JKSUtil {
     private static JKSUtil instance = null;
@@ -42,7 +43,7 @@ public class JKSUtil {
     //read file to get publicKey
     private static PublicKey getPublicKeyFromCrt() {
         //test2.cer  test1.crt  support both
-        String crtPath = "C:/ylh/test1.crt"; // KeyTool generate
+        String crtPath = "C:/ylh/20170929/test1.crt"; // KeyTool generate
         FileInputStream in = null;
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -61,6 +62,13 @@ public class JKSUtil {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        PublicKey publicKey = getPublicKeyFromCrt();
+        System.out.println("publicKey：" + Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+        System.out.println(publicKey.getEncoded().length);
+        System.out.println(Base64.getEncoder().encode(publicKey.getEncoded()).length);
     }
 
     public KeyPair getKeyPair(String alias, char[] password) {
